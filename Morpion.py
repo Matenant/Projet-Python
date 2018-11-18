@@ -1,218 +1,212 @@
 from math import inf
 import random
+import turtle as t
+
+#clavier ou souris
+
 
 ORDI = -1
 HUM = 1
 
-def gagnant(plateau, joueur):   #Regarde le gagnant de la partie
-    if joueur == plateau[0] and plateau[0]==plateau[1] and plateau[1]==plateau[2]:
-        return joueur
-    elif joueur == plateau[3] and plateau[3]==plateau[4] and plateau[4]==plateau[5]:
-        return joueur
-    elif joueur == plateau[6] and plateau[6]==plateau[7] and plateau[7]==plateau[8]:
-        return joueur
-    elif joueur == plateau[0] and plateau[0]==plateau[3] and plateau[3]==plateau[6]:
-        return joueur
-    elif joueur == plateau[1] and plateau[1]==plateau[4] and plateau[4]==plateau[7]:
-        return joueur
-    elif joueur == plateau[2] and plateau[2]==plateau[5] and plateau[5]==plateau[8]:
-        return joueur
-    elif joueur == plateau[0] and plateau[0]==plateau[4] and plateau[4]==plateau[8]:
-        return joueur
-    elif joueur == plateau[2] and plateau[2]==plateau[4] and plateau[4]==plateau[6]:
-        return joueur
-    else:
-        return 0
+def grille():
+    t.hideturtle()
+    t.speed(0)
+    t.width(10)
+    t.penup()
+    t.goto(-60,180)
+    t.right(90)
+    t.pendown()
+    t.forward(360)
+    t.penup()
+    t.goto(60,180)
+    t.pendown()
+    t.forward(360)
+    t.penup()
+    t.left(90)
+    t.goto(-180,60)
+    t.pendown()
+    t.forward(360)
+    t.penup()
+    t.goto(-180,-60)
+    t.pendown()
+    t.forward(360)
+    t.penup()
+    return
+    
+    
+def croix(x,y):
+    #turtle.penup()
+    #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
+    Hyp=20000**(1/2)
+    t.penup()
+    t.speed(0)
+    t.width(5)
+    t.pencolor("red")
+    t.goto(x,y)
+    t.right(45)
+    t.pendown()
+    t.forward(Hyp)
+    t.right(45)
+    t.backward(100)
+    t.left(135)
+    t.backward(Hyp)
+    t.penup()
+    t.right(45)
+    t.goto(x,y)
+    t.forward(200)
+    return
 
-def fini(plateau):  #Regarde si la partie est finie
-    if gagnant(plateau,ORDI) == -1:
-        return True
-    elif gagnant(plateau, HUM) == 1:
-        return True
-    else:
-        return False
+def rond(x,y):
+    #turtle.penup()
+    #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
+    t.penup()
+    t.speed(0)
+    t.width(5)
+    t.pencolor("blue")
+    t.goto(x,y)
+    t.pendown()
+    t.circle(50)
+    t.penup()
+    return
+
+def clique(): #mettre une valeur pour choisir forme
+    #return int
+    t.speed(0)
+    t.showturtle()
+    t.goto(0,0)
+    t.penup()
+    t.onscreenclick(condition_clique)
+    return 
+
+def condition_clique(x,y):
+    if x >= -180 and x <= -60: #1er colonne
+        if y >= 60 and y <= 180: #1er ligne
+            rond(-120,70)
+            return 0
+        elif y >= -60 and y <= 60: #2er ligne
+            rond(-120,-50)
+            return 3
+        elif y >= -180 and y <= -60: #3er ligne
+            croix(-170,-70)
+            return 6
+    elif x >= -60 and x <= 60: #2er colonne
+        if y >= 60 and y <= 180: #1er ligne
+            rond(0,70)
+            return 1
+        elif y >= -60 and y <= 60: #2er ligne
+            rond(0,-50)
+            return 4
+        elif y >= -180 and y <= -60: #3er ligne
+            rond(0,-170)
+            return 7
+    elif x >= -60 and x <= 180: #3er colonne
+        if y >= 60 and y <= 180: #1er ligne
+            rond(120,70)
+            return 2
+        elif y >= -60 and y <= 60: #2er ligne
+            rond(120,-50)
+            return 5
+        elif y >= -180 and y <= -60: #3er ligne
+            rond(120,-170)
+            return 8
+    
+def gagnant(plateau, joueur):   #A voir comment optimiser cette fonction elle est pas fini
+    if j and tableau[0]==tableau[1] and tableau[1]==tableau[2]:
+        return joueur
+    elif tableau[3]==1 and tableau[4]==1 and tableau[5]==1:
+        return 
+    elif tableau[6]==1 and tableau[7]==1 and tableau[8]==1:
+        return 1
+    elif tableau[0]==1 and tableau[3]==1 and tableau[6]==1:
+        return 1
+    elif tableau[1]==1 and tableau[4]==1 and tableau[7]==1:
+        return 1
+    elif tableau[2]==1 and tableau[5]==1 and tableau[8]==1:
+        return 1
+    elif tableau[0]==1 and tableau[4]==1 and tableau[8]==1:
+        return 1
+    elif tableau[2]==1 and tableau[4]==1 and tableau[6]==1:
+        return 1
 
 #―
 
-def afficher(plateau):  #affiche le plateau
-    print("")
-    print(plateau[0],"|",plateau[1],"|",plateau[2])
-    print("――|―――|――")
-    print(plateau[3],"|",plateau[4],"|",plateau[5])
-    print("――|―――|――")
-    print(plateau[6],"|",plateau[7],"|",plateau[8])
-    print("")
-    
+def afficher(plateau):  #Affiche le plateau
+        print("",plateau[0],"|",plateau[1],"|",plateau[2])
+        print("―――|―――|―――")
+        print("",plateau[3],"|",plateau[4],"|",plateau[5])
+        print("―――|―――|―――")
+        print("",plateau[6],"|",plateau[7],"|",plateau[8])
 
-def evaluer(plateau):   #Evalue si la position est gagnante, perdante ou nulle
-    if gagnant(plateau, ORDI) == -1:
-        score = 1
-    elif gagnant(plateau, HUM) == 1:
-        score= -1
-    else:
-        score = 0
-    return score
+
+def evaluer(plateau):   #Regarde qui a gagné et attribut une note
+        if gagnant(plateau, ORDI):
+                score = 1
+        elif gagnant(plateau, HUM):
+                score= -1
+        else:
+                score = 0
+        return score
+
+def tourHum(plateau):   #Fonction qui fait jouer l'humain
+        profondeur = len(caseVide(plateau))
+        if profondeur == 0 or gagnant(plateau):
+                return 0
+        coup = -1
+        verif = False
+        while (coup < 0 or coup > 8) and verif:
+                coup = int(input("Saisir une case entre 1 et 9")) - 1
+                verif = verifCoup(plateau, coup)
+        plateau[coup] = 2
+        return plateau
+
+def tourOrdi(plateau):  #Fonction qui fait jouer l'ordinateur
+        profondeur = len(caseVide(plateau))
+        if prodondeur == 9:
+                plateau[random.randint(0,9)] = 1
+        else:
+                coup = minimax(plateau, profondeur, ORDI)
+                case = coup[0]
+        plateau[case] = 1
+        return plateau
                 
-def caseVide (plateau): #Retourne un tableau avec les indices de case vide
-    case = []
-    i = 0
-    for i, valeur in enumerate(plateau, 0):
-        if valeur == 0:
-            case.append(i)
-    return case
-    
-def verifCoup(plateau, coup):   #Vérifie le coup si il est bon
-    if coup in caseVide(plateau):
-        return True
-    else:
-        return False
-        
+def caseVide (plateau): #Fonction qui permet de savoir ou sont le case vide
+        case = []
+        k = 0
+        for i in plateau:
+                if i == 0:
+                        case.append(k)
+                k = k + 1
+        return case
 
 
-def minimax(plateau, profondeur, joueur):
-    if joueur == ORDI:
-        meilleurCoup = [-1, -inf]
-    else:
-        meilleurCoup = [-1, inf]
+def minimax(plateau, profondeur, joueur):   #Fonction minimax
+	if joueur == ORDI:
+		meilleurCoup = [-1, -inf]
+	else:
+		meilleurCoup = [-1, inf]
 	
-    #Condition d'ârret
+	#Condition d'ârret
 	
-    if profondeur == 0 or fini(plateau) == True:
-        score = evaluer(plateau)
-        return [-1, score]
-    for i in caseVide(plateau):
-        plateau[i] = joueur
-        score = minimax(plateau, profondeur - 1, -joueur)
-        plateau[i] = 0
-        score[0] = i
-        if joueur == ORDI:
-            if score[1] > meilleurCoup[1]:
-                meilleurCoup = score
-        else:
-            if score[1] < meilleurCoup[1]:
-                meilleurCoup = score
-    return meilleurCoup
+	if profondeur == 0 or gagnant(plateau) == True:
+		score = evaluer(plateau)
+		return [-1, score]
+	for i in caseVide(plateau):
+		plateau[i] = joueur
+		score = minimax(plateau, profondeur - 1, -joueur)
+		score[0] = i
+		if joueur == ORDI:
+			if score[1] > meileurCoup[1]:
+				meilleurCoup = score
+		else:
+			if score[1] < meilleurCoup[1]:
+				meilleurCoup = score
+		return meilleurCoup
 		
-def tourHum(plateau):
-    profondeur = len(caseVide(plateau))
-    if profondeur == 0 or fini(plateau) == True:
-        return plateau
-    coup = -1
-    verif = False
-    while (coup < 0 or coup > 8) or verif == False:
-        coup = int(input("Saisir une case entre 1 et 9: ")) - 1
-        verif = verifCoup(plateau, coup)
-    plateau[coup] = 1
-    return plateau
-
-def tourHum2(plateau):
-    profondeur = len(caseVide(plateau))
-    if profondeur == 0 or fini(plateau) == True:
-        return plateau
-    coup = -1
-    verif = False
-    while (coup < 0 or coup > 8) or verif == False:
-        coup = int(input("Saisir une case entre 1 et 9: ")) - 1
-        verif = verifCoup(plateau, coup)
-    plateau[coup] = -1
-    return plateau
-
-def tourOrdiImpossible(plateau):
-    profondeur = len(caseVide(plateau))
-    if profondeur == 9:
-        plateau[random.randint(0,8)] = -1
-        return plateau
-    else:
-        coup = minimax(plateau, profondeur, ORDI)
-        caseCoup = coup[0]
-    plateau[caseCoup] = -1
-    return plateau
-
-def tourOrdiRandom(plateau):
-    verif = False
-    while verif == False:
-        coup = random.randint(0,8)
-        verif = verifCoup(plateau, coup)
-    plateau[coup] = -1
-    return plateau
 		
-plateau = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+plateau = [0, 1, 0, 0, 0, 0, 0, 0, 0]
 
-print("Voulez-vous jouer contre:")
-print("1) Un ordinateur imbattable")
-print("2) Un ordinateur aléatoire")
-print("3) Un autre humain")
-typeJeu = int(input("Votre choix: "))
-
-while typeJeu < 1 or typeJeu > 3:
-    typeJeu = int(input("Votre saisie est incompréhensible. Saissisez à nouveau: "))
-
-if typeJeu == 1 or typeJeu == 2:
-    choix = input("Voulez-vous commencer ? (Y/N) ")
-    erreur = True
-    while erreur == True:
-        if choix == 'Y' or choix == 'y':
-            commencer = True
-            erreur = False
-        elif choix == 'N' or choix == 'n':
-            commencer = False
-            erreur = False
-        else:
-            print("Votre saisie est incompréhensible. Saissisez à nouveau: ")
-
-    afficher(plateau)
-    while len(caseVide(plateau)) > 0 and fini(plateau) == False:
-        if commencer == False:
-            
-            if typeJeu == 1:
-                plateau = tourOrdiImpossible(plateau)
-            elif typeJeu == 2:
-                plateau = tourOrdiRandom(plateau)
-            print("Ordinateur:")
-            afficher(plateau)
-            commencer = True
-            
-        plateau = tourHum(plateau)
-        afficher(plateau)
-        
-        if typeJeu == 1:
-            plateau = tourOrdiImpossible(plateau)
-        elif typeJeu == 2:
-            plateau = tourOrdiRandom(plateau)
-        print("Ordinateur:")
-        afficher(plateau)
-
-
-
-
-    if gagnant(plateau, ORDI) == ORDI:
-        print("L'ordinateur a gagné.")
-    elif gagnant(plateau, HUM) == HUM:
-        print("L'humain a gagné.")
-    else:
-        print("Egalité.")
-        
-elif typeJeu == 3:
-    while len(caseVide(plateau)) and fini(plateau) == False:
-        plateau = tourHum(plateau)
-        print("Humain n°1:")
-        afficher(plateau)
-        if len(caseVide(plateau)) and fini(plateau) == False:
-            plateau = tourHum2(plateau)
-            print("Humain n°2:")
-            afficher(plateau)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+afficher(plateau)
+grille()
+A=t.onscreenclick(condition_clique)
+print(A)
+t.mainloop()
