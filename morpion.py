@@ -8,11 +8,41 @@ ORDI = -1
 HUM1 = 1
 HUM2 = 2
 
-def grille():
+
+##################################
+##      Mode non graphique      ##
+##################################
+
+#―
+#Sert au débogage
+
+def afficher(plateau):  #affiche le plateau
+    print("")
+    print(plateau[0],"|",plateau[1],"|",plateau[2])
+    print("――|―――|――")
+    print(plateau[3],"|",plateau[4],"|",plateau[5])
+    print("――|―――|――")
+    print(plateau[6],"|",plateau[7],"|",plateau[8])
+    print("")
+    
+##################################
+##################################
+
+
+
+##################################
+##          Mode graphique      ##
+##################################
+
+def DebutGraph():
+    grille()
+    
+def grille(): #pour la grille du morpion
     t.hideturtle()
     t.speed(0)
     t.width(10)
     t.penup()
+    
     t.goto(-60,180)
     t.right(90)
     t.pendown()
@@ -38,10 +68,12 @@ def croix(x,y):
     #turtle.penup()
     #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
     Hyp=20000**(1/2)
+    t.hideturtle()
     t.penup()
     t.speed(0)
     t.width(5)
     t.pencolor("red")
+    
     t.goto(x,y)
     t.right(45)
     t.pendown()
@@ -61,10 +93,12 @@ def croix(x,y):
 def rond(x,y):
     #turtle.penup()
     #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
+    t.hideturtle()
     t.penup()
     t.speed(0)
     t.width(5)
     t.pencolor("blue")
+    
     t.goto(x,y)
     t.pendown()
     t.circle(50)
@@ -92,49 +126,101 @@ def cliqueOrdi(x):
         croix(70,-70)
 
 def coordonnee(x,y):
+    t.hideturtle()
+    t.penup()
+    t.speed(0)
     t.goto(x,y)
     x = t.xcor()
     y = t.ycor()
     return (x,y)
 
-def clique(x,y):
+def clique(x,y,plateau):    #J'integre verifCoup pour que le joueur ne puisse pas ecrire par dessus l'adversqaire
+    t.hideturtle()
+    t.penup()
+    t.speed(0)
     t.onscreenclick(t.goto)
     x,y = coordonnee(x,y)
     if x >= -180 and x <= -60: #1er colonne
         if y >= 60 and y <= 180: #1er ligne
-            rond(-120,70)
-            return 0
+            if verifCoup(plateau,0) == True:
+                rond(-120,70)
+                return 0, True
+            else:
+                return 0, False
         elif y >= -60 and y <= 60: #2er ligne
-            rond(-120,-50)
-            return 3
+            if verifCoup(plateau,3) == True:
+                rond(-120,-50)
+                return 3, True
+            else:
+                return 3, False
         elif y >= -180 and y <= -60: #3er ligne
-            rond(-120,-170)
-            return 6
+            if verifCoup(plateau,6) == True:
+                rond(-120,-170)
+                return 6, True
+            else:
+                return 6, False
     elif x >= -60 and x <= 60: #2er colonne
         if y >= 60 and y <= 180: #1er ligne
-            rond(0,70)
-            return 1
+            if verifCoup(plateau,1) == True:
+                rond(0,70)
+                return 1, True
+            else:
+                return 1, False
         elif y >= -60 and y <= 60: #2er ligne
-            rond(0,-50)
-            return 4
+            if verifCoup(plateau,4) == True:
+                rond(0,-50)
+                return 4, True
+            else:
+                return 4, False
         elif y >= -180 and y <= -60: #3er ligne
-            rond(0,-170)
-            return 7
+            if verifCoup(plateau,7) == True:
+                rond(0,-170)
+                return 7, True
+            else:
+                return 7, False
     elif x >= -60 and x <= 180: #3er colonne
         if y >= 60 and y <= 180: #1er ligne
-            rond(120,70)
-            return 2
+            if verifCoup(plateau,2) == True:
+                rond(120,70)
+                return 2, True
+            else:
+                return 2, False
         elif y >= -60 and y <= 60: #2er ligne
-            rond(120,-50)
-            return 5
+            if verifCoup(plateau,5) == True:
+                rond(120,-50)
+                return 5, True
+            else:
+                return 5, False
         elif y >= -180 and y <= -60: #3er ligne
-            rond(120,-170)
-            return 8
+            if verifCoup(plateau,8) == True:
+                rond(120,-170)
+                return 8, True
+            else:
+                return 8, False
+    else:
+        return -1, False
 
 def barreHori(x,y):
+    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
+    t.penup()
+    
+    t.goto(x,y)
+    t.pendown()
+    t.forward(360)
+    t.penup()
+    t.goto(x,y)
+    return
+    
+def barreVerti(x,y):
+    t.hideturtle()
+    t.speed(0)
+    t.width(5)
+    t.pencolor('green')
+    t.penup()
+    
     t.goto(x,y)
     t.right(90)
     t.pendown()
@@ -142,60 +228,100 @@ def barreHori(x,y):
     t.penup()
     t.left(90)
     t.goto(x,y)
-    
-def barreVerti(x,y):
-    t.speed(0)
-    t.width(5)
-    t.pencolor('green')
-    t.goto(x,y)
-    t.pendown()
-    t.forward(360)
-    t.penup()
-    t.goto(x,y)
+    return
     
 def barreDiaGD(x,y):
     Hyp=259200**(1/2)
+    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
+    t.penup()
+    
     t.goto(x,y)
-    t.right(135)
+    t.right(45)
     t.pendown()
     t.forward(Hyp)
     t.penup()
-    t.left(135)
+    t.left(45)
     t.goto(x,y)
+    return
     
 def barreDiaDG(x,y):
     Hyp=259200**(1/2)
+    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
+    t.penup()
+    
     t.goto(x,y)
-    t.left(135)
+    t.right(135)
     t.pendown()
     t.forward(Hyp)
     t.penup()
-    t.right(135)
+    t.left(135)
     t.goto(x,y)
-      
+    return
+
+def affichageGagnant(plateau):
+    if plateau[0]==plateau[1] and plateau[1]==plateau[2] and plateau[1] != 0: #1er ligne
+        barreHori(-180,120)
+        return
+    elif plateau[3]==plateau[4] and plateau[4]==plateau[5] and plateau[4] != 0: #2e ligne
+        barreHori(-180,0)
+        return 
+    elif plateau[6]==plateau[7] and plateau[7]==plateau[8] and plateau[7] != 0: #3e ligne
+        barreHori(-180,-120)
+        return 
+    elif plateau[0]==plateau[3] and plateau[3]==plateau[6] and plateau[3] != 0: #1er colonne
+        barreVerti(-120,180)
+        return 
+    elif plateau[1]==plateau[4] and plateau[4]==plateau[7] and plateau[4] != 0: #2e colonne
+        barreVerti(0,180)
+        return 
+    elif plateau[2]==plateau[5] and plateau[5]==plateau[8] and plateau[5] != 0: #3e colonne
+        barreVerti(120,180)
+        return 
+    elif plateau[0]==plateau[4] and plateau[4]==plateau[8] and plateau[4] != 0: #dia G-D
+        barreDiaGD(-180,180)
+        return 
+    elif plateau[2]==plateau[4] and plateau[4]==plateau[6] and plateau[4] != 0: #dia D-G
+        barreDiaDG(180,180)
+        return
+
+##################################
+##################################
+
+
+
+##################################
+##          Algorithmique       ##
+##################################
+
+"""
+Détermination du gagnant
+              des cases vides
+              des cases déjà utilisé
+Fonction minmax
+"""
 
 def gagnant(plateau, joueur):   #Regarde le gagnant de la partie
-    if joueur == plateau[0] and plateau[0]==plateau[1] and plateau[1]==plateau[2]:
+    if joueur == plateau[0] and plateau[0]==plateau[1] and plateau[1]==plateau[2] and plateau[1] != 0: #1er ligne
         return joueur
-    elif joueur == plateau[3] and plateau[3]==plateau[4] and plateau[4]==plateau[5]:
+    elif joueur == plateau[3] and plateau[3]==plateau[4] and plateau[4]==plateau[5] and plateau[4] != 0: #2e ligne
         return joueur
-    elif joueur == plateau[6] and plateau[6]==plateau[7] and plateau[7]==plateau[8]:
+    elif joueur == plateau[6] and plateau[6]==plateau[7] and plateau[7]==plateau[8] and plateau[7] != 0: #3e ligne
         return joueur
-    elif joueur == plateau[0] and plateau[0]==plateau[3] and plateau[3]==plateau[6]:
+    elif joueur == plateau[0] and plateau[0]==plateau[3] and plateau[3]==plateau[6] and plateau[3] != 0: #1er colonne
         return joueur
-    elif joueur == plateau[1] and plateau[1]==plateau[4] and plateau[4]==plateau[7]:
+    elif joueur == plateau[1] and plateau[1]==plateau[4] and plateau[4]==plateau[7] and plateau[4] != 0: #2e colonne
         return joueur
-    elif joueur == plateau[2] and plateau[2]==plateau[5] and plateau[5]==plateau[8]:
+    elif joueur == plateau[2] and plateau[2]==plateau[5] and plateau[5]==plateau[8] and plateau[5] != 0: #3e colonne
         return joueur
-    elif joueur == plateau[0] and plateau[0]==plateau[4] and plateau[4]==plateau[8]:
+    elif joueur == plateau[0] and plateau[0]==plateau[4] and plateau[4]==plateau[8] and plateau[4] != 0: #dia G-D
         return joueur
-    elif joueur == plateau[2] and plateau[2]==plateau[4] and plateau[4]==plateau[6]:
+    elif joueur == plateau[2] and plateau[2]==plateau[4] and plateau[4]==plateau[6] and plateau[4] != 0: #dia D-G
         return joueur
     else:
         return 0
@@ -209,19 +335,7 @@ def fini(plateau):  #Regarde si la partie est finie
         return True
     else:
         return False
-
-#―
-
-def afficher(plateau):  #affiche le plateau
-    print("")
-    print(plateau[0],"|",plateau[1],"|",plateau[2])
-    print("――|―――|――")
-    print(plateau[3],"|",plateau[4],"|",plateau[5])
-    print("――|―――|――")
-    print(plateau[6],"|",plateau[7],"|",plateau[8])
-    print("")
-    
-
+  
 def evaluer(plateau):   #Evalue si la position est gagnante, perdante ou nulle
     if gagnant(plateau, ORDI) == -1:
         score = 1
@@ -270,6 +384,18 @@ def minimax(plateau, profondeur, joueur):
             if score[1] < meilleurCoup[1]:
                 meilleurCoup = score
     return meilleurCoup
+
+
+"""
+Difficultées
+Tour Ordinateur
+            Impossible
+            Difficile
+            Moyen
+            Facile
+            Random
+     humain
+"""
 		
 def tourHum1(plateau):
     profondeur = len(caseVide(plateau))
@@ -277,9 +403,8 @@ def tourHum1(plateau):
         return plateau
     coup = -1
     verif = False
-    while (coup == None) or verif == False:
-        coup = clique(400,400)
-        verif = verifCoup(plateau, coup)
+    while coup == None or verif == False:
+        coup, verif = clique(400,400,plateau)
     plateau[coup] = 1
     return plateau
 
@@ -316,11 +441,14 @@ def tourOrdiRandom(plateau):
         verif = verifCoup(plateau, coup)
     plateau[coup] = -1
     return plateau
-    
-		
+
+##################################
+##################################
+
+
 plateau = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-grille()
+DebutGraph()
 
 print("Voulez-vous jouer contre:")
 print("1) Un ordinateur")
@@ -376,8 +504,8 @@ if typeJeu == 1:
         afficher(plateau)
 
 
-
-
+    affichageGagnant(plateau)
+    
     if gagnant(plateau, ORDI) == ORDI:
         print("L'ordinateur a gagné.")
     elif gagnant(plateau, HUM1) == HUM1:
