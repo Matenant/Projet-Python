@@ -138,6 +138,7 @@ def clique(x,y,plateau):    #J'integre verifCoup pour que le joueur ne puisse pa
     t.hideturtle()
     t.penup()
     t.speed(0)
+    
     t.onscreenclick(t.goto)
     x,y = coordonnee(x,y)
     if x >= -180 and x <= -60: #1er colonne
