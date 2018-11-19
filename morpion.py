@@ -8,36 +8,7 @@ ORDI = -1
 HUM1 = 1
 HUM2 = 2
 
-
-##################################
-##      Mode non graphique      ##
-##################################
-
-#―
-#Sert au débogage
-
-def afficher(plateau):  #affiche le plateau
-    print("")
-    print(plateau[0],"|",plateau[1],"|",plateau[2])
-    print("――|―――|――")
-    print(plateau[3],"|",plateau[4],"|",plateau[5])
-    print("――|―――|――")
-    print(plateau[6],"|",plateau[7],"|",plateau[8])
-    print("")
-    
-##################################
-##################################
-
-
-
-##################################
-##          Mode graphique      ##
-##################################
-
-def DebutGraph():
-    grille()
-    
-def grille(): #pour la grille du morpion
+def grille():
     t.hideturtle()
     t.speed(0)
     t.width(10)
@@ -68,7 +39,6 @@ def croix(x,y):
     #turtle.penup()
     #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
     Hyp=20000**(1/2)
-    t.hideturtle()
     t.penup()
     t.speed(0)
     t.width(5)
@@ -93,7 +63,6 @@ def croix(x,y):
 def rond(x,y):
     #turtle.penup()
     #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
-    t.hideturtle()
     t.penup()
     t.speed(0)
     t.width(5)
@@ -126,19 +95,12 @@ def cliqueOrdi(x):
         croix(70,-70)
 
 def coordonnee(x,y):
-    t.hideturtle()
-    t.penup()
-    t.speed(0)
     t.goto(x,y)
     x = t.xcor()
     y = t.ycor()
     return (x,y)
 
 def clique(x,y,plateau):    #J'integre verifCoup pour que le joueur ne puisse pas ecrire par dessus l'adversqaire
-    t.hideturtle()
-    t.penup()
-    t.speed(0)
-    
     t.onscreenclick(t.goto)
     x,y = coordonnee(x,y)
     if x >= -180 and x <= -60: #1er colonne
@@ -202,11 +164,9 @@ def clique(x,y,plateau):    #J'integre verifCoup pour que le joueur ne puisse pa
         return -1, False
 
 def barreHori(x,y):
-    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
-    t.penup()
     
     t.goto(x,y)
     t.pendown()
@@ -216,11 +176,9 @@ def barreHori(x,y):
     return
     
 def barreVerti(x,y):
-    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
-    t.penup()
     
     t.goto(x,y)
     t.right(90)
@@ -233,11 +191,9 @@ def barreVerti(x,y):
     
 def barreDiaGD(x,y):
     Hyp=259200**(1/2)
-    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
-    t.penup()
     
     t.goto(x,y)
     t.right(45)
@@ -250,11 +206,9 @@ def barreDiaGD(x,y):
     
 def barreDiaDG(x,y):
     Hyp=259200**(1/2)
-    t.hideturtle()
     t.speed(0)
     t.width(5)
     t.pencolor('green')
-    t.penup()
     
     t.goto(x,y)
     t.right(135)
@@ -289,23 +243,7 @@ def affichageGagnant(plateau):
         return 
     elif plateau[2]==plateau[4] and plateau[4]==plateau[6] and plateau[4] != 0: #dia D-G
         barreDiaDG(180,180)
-        return
-
-##################################
-##################################
-
-
-
-##################################
-##          Algorithmique       ##
-##################################
-
-"""
-Détermination du gagnant
-              des cases vides
-              des cases déjà utilisé
-Fonction minmax
-"""
+        return 
 
 def gagnant(plateau, joueur):   #Regarde le gagnant de la partie
     if joueur == plateau[0] and plateau[0]==plateau[1] and plateau[1]==plateau[2] and plateau[1] != 0: #1er ligne
@@ -336,7 +274,19 @@ def fini(plateau):  #Regarde si la partie est finie
         return True
     else:
         return False
-  
+
+#―
+
+def afficher(plateau):  #affiche le plateau
+    print("")
+    print(plateau[0],"|",plateau[1],"|",plateau[2])
+    print("――|―――|――")
+    print(plateau[3],"|",plateau[4],"|",plateau[5])
+    print("――|―――|――")
+    print(plateau[6],"|",plateau[7],"|",plateau[8])
+    print("")
+    
+
 def evaluer(plateau):   #Evalue si la position est gagnante, perdante ou nulle
     if gagnant(plateau, ORDI) == -1:
         score = 1
@@ -385,18 +335,6 @@ def minimax(plateau, profondeur, joueur):
             if score[1] < meilleurCoup[1]:
                 meilleurCoup = score
     return meilleurCoup
-
-
-"""
-Difficultées
-Tour Ordinateur
-            Impossible
-            Difficile
-            Moyen
-            Facile
-            Random
-     humain
-"""
 		
 def tourHum1(plateau):
     profondeur = len(caseVide(plateau))
@@ -442,14 +380,11 @@ def tourOrdiRandom(plateau):
         verif = verifCoup(plateau, coup)
     plateau[coup] = -1
     return plateau
-
-##################################
-##################################
-
-
+    
+		
 plateau = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-DebutGraph()
+grille()
 
 print("Voulez-vous jouer contre:")
 print("1) Un ordinateur")
