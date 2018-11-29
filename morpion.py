@@ -9,7 +9,7 @@ HUM1 = 1
 HUM2 = 2
 
 def DebutGraph():   #Regroupe l'affichage graphique de base
-    t.title("Get your ass kicked")  #Titre
+    t.title("Morpion 1.0")  #Titre
     texteChoixDifficulté()  #Affiche texte/croix pour choix difficulté
     grille()    #La grille du morpion
     return
@@ -542,45 +542,45 @@ def minimax(plateau, profondeur, joueur):   #Fonction minimax qui parcourt l'arb
                 meilleurCoup = score
     return meilleurCoup                     #On retourne le meilleur coup
 		
-def tourHum1(plateau):                      
+def tourHum1(plateau):                      	#Fonction qui fait jouer le premier humain
     profondeur = len(caseVide(plateau))
-    if profondeur == 0 or fini(plateau) == True:
+    if profondeur == 0 or fini(plateau) == True:#On regarde si il reste des cases vides ou si il y a un gagnant
         return plateau
-    coup = -1
-    verif = False
-    while (coup < 0 or coup > 8) or verif == False:
-        coup, verif = clique(plateau, 1)
-    plateau[coup] = 1
-    return plateau
+    coup = -1				#On initialise le coup à -1 pour rentrer dans la boucle
+    verif = False			#De même pour la vérification du coup qu'on met à faux
+    while (coup < 0 or coup > 8) or verif == False:#On demande à l'utilisateur de saisir tant qu'il ne saisit pas une bonne case
+        coup, verif = clique(plateau, 1)	#On vérifie son coup
+    plateau[coup] = 1			#On place le jeton à la case qu'il demande
+    return plateau			#On retourne le plateau
 
-def tourHum2(plateau):
+def tourHum2(plateau):				#Fonction qui fait jouer le deuxième humain
     profondeur = len(caseVide(plateau))
-    if profondeur == 0 or fini(plateau) == True:
+    if profondeur == 0 or fini(plateau) == True:#On regarde si il reste des cases vides ou si il y a un gagnant
         return plateau
-    coup = -1
-    verif = False
-    while (coup < 0 or coup > 8) or verif == False:
-        coup, verif = clique(plateau, 2)
-    plateau[coup] = 2
-    return plateau
+    coup = -1				#On initialise le coup à -1 pour rentrer dans la boucle
+    verif = False			#De même pour la vérification du coup qu'on met à faux
+    while (coup < 0 or coup > 8) or verif == False:#On demande à l'utilisateur de saisir tant qu'il ne saisit pas une bonne case
+        coup, verif = clique(plateau, 2)	#On vérifie son coup
+    plateau[coup] = 2			#On place le jeton à la case qu'il demande
+    return plateau			#On retourne le plateau
 
-def tourOrdi(plateau, niveau):
-    profondeur = len(caseVide(plateau))
-    if niveau == -1:
+def tourOrdi(plateau, niveau):		#Fonction qui fait jouer l'ordinateur
+    profondeur = len(caseVide(plateau))	#On prend le nombre de case vide
+    if niveau == -1:		#Si le niveau est imbattable on prend le nombre de case vide an tant que profondeur
         niveau = profondeur
-    if profondeur == 9 or niveau == 0:
+    if profondeur == 9 or niveau == 0:	#Le premier coup ou le choix de l'ordinateur aléatoire donne le premier coup ou tous les autres aléatoires
         verif = False
-        while verif == False:
-            coup = random.randint(0,8)
-            verif = verifCoup(plateau, coup)    
+        while verif == False:	#On vérifie que le coup n'écrase pas un autre coup
+            coup = random.randint(0,8)	#On génère le coup aléatoire
+            verif = verifCoup(plateau, coup)    #On le vérifie
         cliqueOrdi(coup)    
-        plateau[coup] = -1
-        return plateau
+        plateau[coup] = -1	#On place le coup
+        return plateau		#On retourne le plateau
     else:
-        coup = minimax(plateau, niveau, ORDI)
-        caseCoup = coup[0]
+        coup = minimax(plateau, niveau, ORDI)	#On utilise la fonction minimax pour trouver le meilleur coup à jouer selon l'état du jeu
+        caseCoup = coup[0]		#On sauvegarde le coup dans une variable
     cliqueOrdi(caseCoup)
-    plateau[caseCoup] = -1
+    plateau[caseCoup] = -1		#On place le coup de l'ordinateur
     return plateau
 
 def modifTableChoix(table,i):
