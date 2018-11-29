@@ -4,7 +4,7 @@ import turtle as t
 
 #clavier ou souris
 
-ORDI = -1
+ORDI = -1		#constante qui servent pour l'algorithme
 HUM1 = 1
 HUM2 = 2
 
