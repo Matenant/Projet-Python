@@ -4,21 +4,53 @@ import turtle as t
 
 #clavier ou souris
 
-ORDI = -1		#constante qui servent pour l'algorithme
+ORDI = -1
 HUM1 = 1
 HUM2 = 2
 
-def DebutGraph():   #Regroupe l'affichage graphique de base
-    t.title("Morpion 1.0")  #Titre
-    texteChoixDifficulté()  #Affiche texte/croix pour choix difficulté
-    grille()    #La grille du morpion
-    return
-    
-def texteChoixDifficulté():
+#############################################
+#############################################
+#######            Affichage          #######
+#############################################
+#############################################
+
+ 
+def grille():   #Affiche la grille
     t.hideturtle()
     t.speed(0)
     t.width(10)
+    t.pencolor('black')
     t.penup()
+    
+    t.goto(-60,180)     #Va en haut du premier trait vertical
+    t.right(90)         #se place à la verticale
+    t.pendown()
+    t.forward(360)      #Trace le trait
+    t.penup()
+    t.goto(60,180)      #Va en haut du deuxième trait vertical
+    t.pendown()
+    t.forward(360)      #Trace le trait
+    t.penup()
+    t.left(90)          #reprend l'angle initial
+    t.goto(-180,60)     #Va tout à gauche du trait horizontale supérieur
+    t.pendown()
+    t.forward(360)      #Trace le trait
+    t.penup()
+    t.goto(-180,-60)    #Va tout à gauche du trait horizontale inférieur
+    t.pendown()
+    t.forward(360)      #Trace le trait
+    t.penup()
+    return
+
+#############################################
+#######       Choix difficultée       #######
+#############################################
+       
+def texteChoixDifficulté(): #Mise en place du texte et des croix grises en dessous
+    t.hideturtle()  
+    t.speed(0)      
+    t.width(10)     
+    t.penup()       
     
     t.goto(-200,350)
     t.write("Choisissez la difficulté :", font=(15))
@@ -36,203 +68,342 @@ def texteChoixDifficulté():
     t.write("Commencer")
     t.goto(150,240)
     t.write("2 joueurs")
-
-    croixDiffGrey(-165,290) #impo
-    croixDiffGrey(-74,290)  #Diff
-    croixDiffGrey(5,290)   #Moy
-    croixDiffGrey(83,290)  #fac
-    croixDiffGrey(160,290)  #rand
-    croixDiffGrey(-165,230) #comm
-    croixDiffGrey(160,230) #2j
-
-    t.pencolor("black")
     t.goto(-10,210)
     t.write("Jouer", font=(40))
+
+    croixDiffGrey(-165,290) #Impossible
+    croixDiffGrey(-74,290)  #Difficile
+    croixDiffGrey(5,290)    #Moyen
+    croixDiffGrey(83,290)   #Facile
+    croixDiffGrey(160,290)  #Rand
+    croixDiffGrey(-165,230) #Commencer
+    croixDiffGrey(160,230)  #2 Joueurs
     return
 
-def croixDiffGrey(x,y):
-    Hyp=800**(1/2)
+def croixDiffGrey(x,y): #Créer les croix grises pour initialisation et réécriture
+    Hyp=800**(1/2)  #Pythagore pour avoir la longueur des diagonales
     t.penup()
     t.speed(0)
     t.width(2)
-    t.pencolor("darkgrey")
+    t.pencolor("#F5F5F5")   #gris très très clair
     
-    t.goto(x,y)
-    t.right(45)
+    t.goto(x,y)     #va au sommet gauche de la croix
+    t.right(45)     #tourne de -45° (cercle trigonométrique)
     t.pendown()
-    t.forward(Hyp)
+    t.forward(Hyp)  #trace la première diagonal (de gauche à droite)
     t.penup()
-    t.left(135)
-    t.forward(20)
-    t.left(135)
+    t.left(135)     #tourne de 135° (cercle trigonométrique) = 90° par rapport à 0
+    t.forward(20)   #monte de 20px
+    
+    #est au sommet droit de la croix
+    
+    t.left(135)     #tourne de 135° (cercle trigonométrique) = 225° par rapport à 0
     t.pendown()
-    t.forward(Hyp)
+    t.forward(Hyp)  #trace la deuxième diagonal (de droite à gauxhe)
     t.penup()
-    t.right(225)
-    t.goto(x,y)
+    t.right(225)    #repend l'angle initiale soit 0°
+    t.goto(x,y)     #reprend la position initial
     return
 
-def croixDiffBlack(x,y):
-    Hyp=800**(1/2)
-    t.penup()
-    t.speed(0)
-    t.width(2)
-    t.pencolor("black")
-    
-    t.goto(x,y)
-    t.right(45)
-    t.pendown()
-    t.forward(Hyp)
-    t.penup()
-    t.left(135)
-    t.forward(20)
-    t.left(135)
-    t.pendown()
-    t.forward(Hyp)
-    t.penup()
-    t.right(225)
-    t.goto(x,y)
-    return
+def conditionsDifficulte(table,i):  #retourne l'état des choix de difficultée
+    if table[5] == 1:   #si veux commencer en premier
+        if table[7] == 1:   #et que on clique sur "jouer"
+            if table[6] == 1:   #mais que "2 joueurs" est coché
+                return 0, False, False, False   #ne commence pas le jeu
+            else:               #si "2 joueurs" pas coché
+                return i, True, False, True     #commence le jeu avec la difficultée voulue, et le paramètre commencer
+        else:               #mais si pas de clique sur "jouer"
+            return 0, False, False, False   #sort de la fonction mais reste dans la boucle infinie
+    else:               #si ne veux pas commencer
+        if table[7] == 1:   #et que on clique sur "jouer"
+            if table[6] == 1:   #mais que "2 joueurs" est coché
+                return 0, False, False, False   #ne commence pas le jeu
+            else:               #si "2 joueurs" pas coché
+                return i, False, False, True    #commence le jeu avec la difficultée voulue, sans le paramètre commencer
+        else:               #mais si pas de clique sur "jouer"
+            return 0, False, False, False    #sort de la fonction mais reste dans la boucle infinie
 
-def verifChoix(tableChoix,choix):
-    if tableChoix[choix] == 0:
+def difficulte(table):  #élimine les choix de difficultée multiples
+    i = 0   #tableau commence à 0
+    tmp = -1    #il faux que ce soit différent de [0,5[
+    while i != 4:    #parcours les 5 premiers éléments (difficultées)
+        if table[i] == 1:   #quand rencontre un 1
+            tmp = i         #sauvegarde l'index de la cellule
+        if tmp != -1 and table[i+1] == 1:   #puis si tmp a été modifié et que 2 difficultées ont été cochées
+            return 0, False, False, False   #sort de la fonction, mais reste dans la boucle infinie
+        i = i +1
+        
+    if table[0] == 1:   #Impossible
+        return conditionsDifficulte(table,1)
+    elif table[1] == 1: #Difficile
+        return conditionsDifficulte(table,2)
+    elif table[2] == 1: #Moyen
+        return conditionsDifficulte(table,3)
+    elif table[3] == 1: #Facile
+        return conditionsDifficulte(table,4)
+    elif table[4] == 1: #Random
+        return conditionsDifficulte(table,5)
+    elif table[6] == 1: #2 joueur mais aucun autre mode de difficultée
+        if table[7] == 1:   #si clique sur "jouer"
+            if table[5] == 1:   #et veux commencer
+                return 0, False, False, False   #sort de la fonction, mais reste dans la boucle infinis
+                                                #pas besoin de dire qui commence, les joueurs doivent se mettre d'accord
+            else:               #si veux pas commencer
+                return 0, False, True, True     #commence le jeu entre les deux joueurs
+    return 0, False, False, False   #si rien n'est coché, sort de la fonction, mais reste dans la boucle infinie
+ 
+
+def choixDifficulte(tableauEtat):
+    x, y = 400, 400         #Initialise x,y pour réaliser une boucle infinie
+    t.onscreenclick(t.goto) #Va à l'emplacement du clique mais ne sauvegarde pas les coordonnées
+    x,y = coordonnee(x,y)   #prend les coordonnée du clique
+    
+    #Test si les cliques sont sur les croix sinon sort, jusqu'à ce qu'un clique soit bon
+    
+    if y >= 270 and y <= 290:                   #1er ligne
+        if x >= -165 and x <= -145:                 #Impossible
+            if verifChoix(tableauEtat,0) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(-165,290)                
+                return 1                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(-165,290)
+                return -1                   #retourne l'inverse du mod de difficulté
+        elif x >= -74 and x <= -54:                 #Difficile
+            if verifChoix(tableauEtat,1) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(-74,290)
+                return 2                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(-74,290)
+                return -2                   #retourne l'inverse du mod de difficulté
+        elif x >= 5 and x <= 25:                    #Moyen
+            if verifChoix(tableauEtat,2) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(5,290)
+                return 3                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(5,290)
+                return -3                   #retourne l'inverse du mod de difficulté
+        elif x >= 83 and x <= 103:                  #Facile
+            if verifChoix(tableauEtat,3) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(83,290)
+                return 4                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(83,290)
+                return -4                   #retourne l'inverse du mod de difficulté
+        elif x >= 160 and x <= 180:                 #Random
+            if verifChoix(tableauEtat,4) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(160,290)
+                return 5                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(160,290)
+                return -5                   #retourne l'inverse du mod de difficulté
+        else:                               
+            return 0                        #si clique dans le vide, reste dans la boucle infinie
+    elif y >= 210 and y <= 230:
+        if x >= -165 and x <= -145:                 #Commencer
+            if verifChoix(tableauEtat,5) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(-165,230)
+                return 6                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(-165,230)
+                return -6                   #retourne l'inverse du mod de difficulté
+        elif x >= 160 and x <= 180:                 #2 Joueurs
+            if verifChoix(tableauEtat,6) == True:       #Si la croix et grise, crée une croix noire
+                croixDiffBlack(160,230)
+                return 7                    #retourne le mod de difficulté
+            else:
+                croixDiffGrey(160,230)                  
+                return -7                   #retourne l'inverse du mod de difficulté
+        elif x >= -10 and x <= 20:                  #Jouer
+            return 8                        #retourne la valeur assigner au clique sur jouer
+    return 0    #sort de la fonction pour la re-exécuter dans la boucle infinie
+
+def coordonnee(x,y):    #prend les coordonnée des cliques
+    t.goto(x,y)     #va aux coordonnées du cliques
+    x = t.xcor()    #x prend la valeur sur l'axe des abscisses
+    y = t.ycor()    #y prend la valeur sur l'axe des ordonnées
+    return x, y
+   
+def verifChoix(tableChoix,choix):   #regarde si la croix sur laquelle on clique et noir ou grise
+    if tableChoix[choix] == 0:  #si gris retourne True sinon False
         return True
     else:
         return False
     
-def choixDifficulte(tableauEtat,xdel,ydel):
-    x, y = 400, 400
-    t.onscreenclick(t.goto)
-    x,y = coordonnee(x,y)
-    if y >= 270 and y <= 290: #1er ligne
-        if x >= -165 and x <= -145: #imp
-            if verifChoix(tableauEtat,0) == True:
-                croixDiffBlack(-165,290)
-                return 1, -165, 290
-            else:
-                croixDiffGrey(-165,290)
-                return -1, -165, 290
-        elif x >= -74 and x <= -54: #diff
-            if verifChoix(tableauEtat,1) == True:
-                croixDiffBlack(-74,290)
-                return 2, -74, 290
-            else:
-                croixDiffGrey(-74,290)
-                return -2, -74, 290
-        elif x >= 5 and x <= 25: #moy
-            if verifChoix(tableauEtat,2) == True:
-                croixDiffBlack(5,290)
-                return 3, 5, 290
-            else:
-                croixDiffGrey(5,290)
-                return -3, 5, 290
-        elif x >= 83 and x <= 103: #fac
-            if verifChoix(tableauEtat,3) == True:
-                croixDiffBlack(83,290)
-                return 4, 83, 290
-            else:
-                croixDiffGrey(83,290)
-                return -4, 83, 290
-        elif x >= 160 and x <= 180: #random
-            if verifChoix(tableauEtat,4) == True:
-                croixDiffBlack(160,290)
-                return 5, 160, 290
-            else:
-                croixDiffGrey(160,290)
-                return -5, 160, 290
-        else:
-            return 0, 0, 0
-    elif y >= 210 and y <= 230:
-        if x >= -165 and x <= -145: #comm
-            if verifChoix(tableauEtat,5) == True:
-                croixDiffBlack(-165,230)
-                return 6, -165, 230
-            else:
-                croixDiffGrey(-165,230)
-                return -6, -165, 230
-        elif x >= 160 and x <= 180: #2p
-            if verifChoix(tableauEtat,6) == True:
-                croixDiffBlack(160,230)
-                return 7, 160, 230
-            else:
-                croixDiffGrey(160,230)
-                return -7, 160, 230
-        elif x >= -10 and x <= 20: #jouer
-            return 8, 0, 0
-        else:
-            return 0, 0, 0
-    else:
-        return 0, 0, 0
-    
-def grille():
-    t.hideturtle()
+def croixDiffBlack(x,y):    #Créer les croix noires pour choix de difficulté et réécriture
+    Hyp=800**(1/2)  #Pythagore pour avoir la longueur des diagonales
+    t.penup()
     t.speed(0)
-    t.width(10)
-    t.pencolor('black')
-    t.penup()
+    t.width(2)
+    t.pencolor("black")
     
-    t.goto(-60,180)
-    t.right(90)
+    t.goto(x,y)     #va au sommet gauche de la croix
+    t.right(45)     #tourne de -45° (cercle trigonométrique)
     t.pendown()
-    t.forward(360)
+    t.forward(Hyp)  #trace la première diagonal (de gauche à droite)
     t.penup()
-    t.goto(60,180)
+    t.left(135)     #tourne de 135° (cercle trigonométrique) = 90° par rapport à 0
+    t.forward(20)   #monte de 20px
+    
+    #est au sommet droit de la croix
+    
+    t.left(135)     #tourne de 135° (cercle trigonométrique) = 225° par rapport à 0
     t.pendown()
-    t.forward(360)
+    t.forward(Hyp)  #trace la deuxième diagonal (de droite à gauxhe)
     t.penup()
-    t.left(90)
-    t.goto(-180,60)
-    t.pendown()
-    t.forward(360)
-    t.penup()
-    t.goto(-180,-60)
-    t.pendown()
-    t.forward(360)
-    t.penup()
+    t.right(225)    #repend l'angle initiale soit 0°
+    t.goto(x,y)     #reprend la position initial
     return
+
+#############################################
+#######         Choix case Tour       #######
+#############################################
+
+def CliqueHumain(plateau, joueur):    #affiche une croix ou un rond en fonction du joueur humain
+    x, y = 400, 400         #Initialise x,y pour réaliser une boucle infinie
+    t.onscreenclick(t.goto) #Va à l'emplacement du clique mais ne sauvegarde pas les coordonnées
+    x,y = coordonnee(x,y)   #prend les coordonnée du clique
+
+    #Test si les cliques sont dans les cases de la grille sinon sort, jusqu'à ce qu'un clique soit bon
+
+    # 0|1|2
+    # ―――――
+    # 3|4|5
+    # ―――――
+    # 6|7|8
     
+    if x >= -180 and x <= -60: #1er colonne
+        if y >= 60 and y <= 180: #1er ligne
+            if verifCoup(plateau,0) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(-120,70)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(-170,170)
+                return 0, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 0, False     #sinon reste dans la boucle infinie
+        elif y >= -60 and y <= 60: #2er ligne
+            if verifCoup(plateau,3) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(-120,-50)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(-170,50)
+                return 3, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 3, False     #sinon reste dans la boucle infinie
+        elif y >= -180 and y <= -60: #3er ligne
+            if verifCoup(plateau,6) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(-120,-170)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(-170,-70)
+                return 6, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 6, False     #sinon reste dans la boucle infinie
+    elif x >= -60 and x <= 60: #2er colonne
+        if y >= 60 and y <= 180: #1er ligne
+            if verifCoup(plateau,1) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(0,70)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(-50,170)
+                return 1, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 1, False     #sinon reste dans la boucle infinie
+        elif y >= -60 and y <= 60: #2er ligne
+            if verifCoup(plateau,4) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(0,-50)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(-50,50)
+                return 4, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 4, False     #sinon reste dans la boucle infinie
+        elif y >= -180 and y <= -60: #3er ligne
+            if verifCoup(plateau,7) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(0,-170)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(-50,-70)
+                return 7, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 7, False     #sinon reste dans la boucle infinie
+    elif x >= -60 and x <= 180: #3er colonne
+        if y >= 60 and y <= 180: #1er ligne
+            if verifCoup(plateau,2) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(120,70)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(70,170)
+                return 2, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 2, False     #sinon reste dans la boucle infinie
+        elif y >= -60 and y <= 60: #2er ligne
+            if verifCoup(plateau,5) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(120,-50)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(70,50)
+                return 5, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 5, False     #sinon reste dans la boucle infinie
+        elif y >= -180 and y <= -60: #3er ligne
+            if verifCoup(plateau,8) == True:    #J'intègre verifCoup pour que le joueur ne puisse pas écrire par dessus l'adversaire
+                if joueur == 1:     #si un joueur ou alors si le premier joueur, affiche un rond
+                    rond(120,-170)
+                else:               #sinon, si 2 joueur et le tour de celui-ci, affiche une croix
+                    croix(70,-70)
+                return 8, True      #si la case est vide, retourne le numéro de la case, et True afin de sortir de la boucle infinie
+            else:
+                return 8, False     #sinon reste dans la boucle infinie
+    else:
+        return -1, False    #Si en dehors de la grille, ne retourne aucune case valide et reste dans la boucle infinie
     
-def croix(x,y):
-    #turtle.penup()
-    #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
-    Hyp=20000**(1/2)
+def croix(x,y): #Trace les croix sur la grille
+    Hyp=20000**(1/2)    #Pythagore pour avoir la longueur des diagonales
     t.penup()
     t.speed(0)
     t.width(5)
     t.pencolor("red")
     
-    t.goto(x,y)
-    t.right(45)
+    t.goto(x,y)         #va au sommet gauche de la croix
+    t.right(45)         #tourne de -45° (cercle trigonométrique)
     t.pendown()
-    t.forward(Hyp)
+    t.forward(Hyp)      #trace la première diagonal (de gauche à droite)
     t.penup()
-    t.right(45)
-    t.backward(100)
-    t.left(135)
+    t.left(135)         #tourne de 135° (cercle trigonométrique) = 90° par rapport à 0
+    t.forward(100)      #monte de 100px
+
+    #est au sommet droit de la croix
+    
+    t.left(135)         #tourne de 135° (cercle trigonométrique) = 225° par rapport à 0
     t.pendown()
-    t.backward(Hyp)
+    t.forward(Hyp)      #trace la deuxième diagonal (de droite à gauxhe)
     t.penup()
-    t.right(-45)
-    t.forward(100)
-    t.right(90)
+    t.right(225)        #repend l'angle initiale soit 0°
+    t.goto(x,y)         #reprend la position initial
     return
 
-def rond(x,y):
-    #turtle.penup()
-    #On laisse du temps pour que le rond se fasse ou on fait tous en instantané
+def rond(x,y):  #Trace les ronds sur la grille
     t.penup()
     t.speed(0)
     t.width(5)
     t.pencolor("blue")
     
-    t.goto(x,y)
+    t.goto(x,y)     #va en bas du futur cercle, mais reste centré
     t.pendown()
-    t.circle(50)
+    t.circle(50)    #trace un cercle de rayon 50px
     t.penup()
     return
 
-def cliqueOrdi(x):
-    if x == 0:
+def CroixOrdi(x):  #Trace les croix du tour ordi
+
+    # 0|1|2
+    # ―――――
+    # 3|4|5
+    # ―――――
+    # 6|7|8
+        
+    if x == 0:          
         croix(-170,170)
     elif x == 1:
         croix(-50,170)
@@ -250,161 +421,12 @@ def cliqueOrdi(x):
         croix(-50,-70)
     elif x == 8:
         croix(70,-70)
-
-def coordonnee(x,y):
-    t.goto(x,y)
-    x = t.xcor()
-    y = t.ycor()
-    return (x,y)
-
-def clique(plateau, joueur):    #J'integre verifCoup pour que le joueur ne puisse pas ecrire par dessus l'adversqaire
-    x, y = 400, 400
-    t.onscreenclick(t.goto)
-    x,y = coordonnee(x,y)
-    if x >= -180 and x <= -60: #1er colonne
-        if y >= 60 and y <= 180: #1er ligne
-            if verifCoup(plateau,0) == True:
-                if joueur == 1:
-                    rond(-120,70)
-                else:
-                    croix(-170,170)
-                return 0, True
-            else:
-                return 0, False
-        elif y >= -60 and y <= 60: #2er ligne
-            if verifCoup(plateau,3) == True:
-                if joueur == 1:
-                    rond(-120,-50)
-                else:
-                    croix(-170,50)
-                return 3, True
-            else:
-                return 3, False
-        elif y >= -180 and y <= -60: #3er ligne
-            if verifCoup(plateau,6) == True:
-                if joueur == 1:
-                    rond(-120,-170)
-                else:
-                    croix(-170,-70)
-                return 6, True
-            else:
-                return 6, False
-    elif x >= -60 and x <= 60: #2er colonne
-        if y >= 60 and y <= 180: #1er ligne
-            if verifCoup(plateau,1) == True:
-                if joueur == 1:
-                    rond(0,70)
-                else:
-                    croix(-50,170)
-                return 1, True
-            else:
-                return 1, False
-        elif y >= -60 and y <= 60: #2er ligne
-            if verifCoup(plateau,4) == True:
-                if joueur == 1:
-                    rond(0,-50)
-                else:
-                    croix(-50,50)
-                return 4, True
-            else:
-                return 4, False
-        elif y >= -180 and y <= -60: #3er ligne
-            if verifCoup(plateau,7) == True:
-                if joueur == 1:
-                    rond(0,-170)
-                else:
-                    croix(-50,-70)
-                return 7, True
-            else:
-                return 7, False
-    elif x >= -60 and x <= 180: #3er colonne
-        if y >= 60 and y <= 180: #1er ligne
-            if verifCoup(plateau,2) == True:
-                if joueur == 1:
-                    rond(120,70)
-                else:
-                    croix(70,170)
-                return 2, True
-            else:
-                return 2, False
-        elif y >= -60 and y <= 60: #2er ligne
-            if verifCoup(plateau,5) == True:
-                if joueur == 1:
-                    rond(120,-50)
-                else:
-                    croix(70,50)
-                return 5, True
-            else:
-                return 5, False
-        elif y >= -180 and y <= -60: #3er ligne
-            if verifCoup(plateau,8) == True:
-                if joueur == 1:
-                    rond(120,-170)
-                else:
-                    croix(70,-70)
-                return 8, True
-            else:
-                return 8, False
-    else:
-        return -1, False
-
-def barreHori(x,y):
-    t.speed(0)
-    t.width(5)
-    t.pencolor('green')
-    
-    t.goto(x,y)
-    t.pendown()
-    t.forward(360)
-    t.penup()
-    t.goto(x,y)
-    return
-    
-def barreVerti(x,y):
-    t.speed(0)
-    t.width(5)
-    t.pencolor('green')
-    
-    t.goto(x,y)
-    t.right(90)
-    t.pendown()
-    t.forward(360)
-    t.penup()
-    t.left(90)
-    t.goto(x,y)
-    return
-    
-def barreDiaGD(x,y):
-    Hyp=259200**(1/2)
-    t.speed(0)
-    t.width(5)
-    t.pencolor('green')
-    
-    t.goto(x,y)
-    t.right(45)
-    t.pendown()
-    t.forward(Hyp)
-    t.penup()
-    t.left(45)
-    t.goto(x,y)
-    return
-    
-def barreDiaDG(x,y):
-    Hyp=259200**(1/2)
-    t.speed(0)
-    t.width(5)
-    t.pencolor('green')
-    
-    t.goto(x,y)
-    t.right(135)
-    t.pendown()
-    t.forward(Hyp)
-    t.penup()
-    t.left(135)
-    t.goto(x,y)
-    return
-
-def affichageGagnant(plateau):  #!=0 en premier
+        
+#############################################
+#######       Affichage gagnant       #######
+#############################################
+        
+def affichageGagnant(plateau):  #Affiche les barres de victoires quand celle ci a lieu
     if plateau[0]==plateau[1] and plateau[1]==plateau[2] and plateau[1] != 0: #1er ligne
         barreHori(-180,120)
         return
@@ -423,14 +445,76 @@ def affichageGagnant(plateau):  #!=0 en premier
     elif plateau[2]==plateau[5] and plateau[5]==plateau[8] and plateau[5] != 0: #3e colonne
         barreVerti(120,180)
         return 
-    elif plateau[0]==plateau[4] and plateau[4]==plateau[8] and plateau[4] != 0: #dia G-D
+    elif plateau[0]==plateau[4] and plateau[4]==plateau[8] and plateau[4] != 0: #diagonale coin supérieur Gauche - diagonale coin inférieur Droit
         barreDiaGD(-180,180)
         return 
-    elif plateau[2]==plateau[4] and plateau[4]==plateau[6] and plateau[4] != 0: #dia D-G
+    elif plateau[2]==plateau[4] and plateau[4]==plateau[6] and plateau[4] != 0: #diagonale coin supérieur Droit - diagonale coin inférieur Gauche
         barreDiaDG(180,180)
         return
     else:
         return
+
+def barreHori(x,y): #Affiche les barres de victoire dans le cas horizontale
+    t.speed(0)
+    t.width(5)
+    t.pencolor('green')
+    
+    t.goto(x,y)     #ce centre verticalement et ce place le plus a gauche sur la ligne où victoire est
+    t.pendown()
+    t.forward(360)  #Trace un trait horizontale le long de la ligne
+    t.penup()
+    t.goto(x,y)     #Se repositionne au début
+    return
+    
+def barreVerti(x,y): #Affiche les barres de victoire dans le cas verticale
+    t.speed(0)
+    t.width(5)
+    t.pencolor('green')
+    
+    t.goto(x,y)     #ce centre horizontalement et ce place le plus en haut sur la colonne où victoire est
+    t.right(90)     #Tourne pour se mettre à la verticale
+    t.pendown()
+    t.forward(360)  #Trace un trait verticale le long de la ligne
+    t.penup()
+    t.left(90)      #retourne à l'angle de base
+    t.goto(x,y)     #Se repositionne au début
+    return
+    
+def barreDiaGD(x,y): #Affiche les barres de victoire dans le cas d'une victoire diagonale commençant dans le coin supérieur gauche
+    Hyp=259200**(1/2)    #Pythagore pour avoir la longueur des diagonales
+    t.speed(0)
+    t.width(5)
+    t.pencolor('green')
+    
+    t.goto(x,y)     #place sur le coin supérieur gauche de la grille si victoire est
+    t.right(45)     #tourne de -45° (cercle trigonométrique)
+    t.pendown()
+    t.forward(Hyp)  #trace la diagonale complète
+    t.penup()
+    t.left(45)      #retourne à l'angle de base
+    t.goto(x,y)     #Se repositionne au début
+    return
+    
+def barreDiaDG(x,y): #Affiche les barres de victoire dans le cas d'une victoire diagonale commençant dans le coin supérieur droit
+    Hyp=259200**(1/2)    #Pythagore pour avoir la longueur des diagonales
+    t.speed(0)
+    t.width(5)
+    t.pencolor('green')
+    
+    t.goto(x,y)     #place sur le coin supérieur droit de la grille si victoire est
+    t.right(135)    #tourne de 225° (cercle trigonométrique)
+    t.pendown()
+    t.forward(Hyp)  #trace la diagonale complète
+    t.penup()
+    t.left(135)     #retourne à l'angle de base
+    t.goto(x,y)     #Se repositionne au début
+    return
+
+#############################################
+#############################################
+#######         Algorithmique         #######
+#############################################
+#############################################
 
 def gagnant(plateau, joueur):   #Regarde le gagnant de la partie
     #Première ligne
@@ -461,11 +545,11 @@ def gagnant(plateau, joueur):   #Regarde le gagnant de la partie
     else:
         return 0
 
-#0|1|2
-#―――――
-#3|4|5
-#―――――
-#6|7|8
+# 0|1|2
+# ―――――
+# 3|4|5
+# ―――――
+# 6|7|8
 
 def fini(plateau):  #Regarde si la partie est finie
     if gagnant(plateau,ORDI) == -1: #On voit si quelqu'un a gagné et on retourne vrai si c'est le cas car la partie est fini
@@ -542,126 +626,91 @@ def minimax(plateau, profondeur, joueur):   #Fonction minimax qui parcourt l'arb
                 meilleurCoup = score
     return meilleurCoup                     #On retourne le meilleur coup
 		
-def tourHum1(plateau):                      	#Fonction qui fait jouer le premier humain
+def tourHum1(plateau):                      
     profondeur = len(caseVide(plateau))
-    if profondeur == 0 or fini(plateau) == True:#On regarde si il reste des cases vides ou si il y a un gagnant
+    if profondeur == 0 or fini(plateau) == True:
         return plateau
-    coup = -1				#On initialise le coup à -1 pour rentrer dans la boucle
-    verif = False			#De même pour la vérification du coup qu'on met à faux
-    while (coup < 0 or coup > 8) or verif == False:#On demande à l'utilisateur de saisir tant qu'il ne saisit pas une bonne case
-        coup, verif = clique(plateau, 1)	#On vérifie son coup
-    plateau[coup] = 1			#On place le jeton à la case qu'il demande
-    return plateau			#On retourne le plateau
-
-def tourHum2(plateau):				#Fonction qui fait jouer le deuxième humain
-    profondeur = len(caseVide(plateau))
-    if profondeur == 0 or fini(plateau) == True:#On regarde si il reste des cases vides ou si il y a un gagnant
-        return plateau
-    coup = -1				#On initialise le coup à -1 pour rentrer dans la boucle
-    verif = False			#De même pour la vérification du coup qu'on met à faux
-    while (coup < 0 or coup > 8) or verif == False:#On demande à l'utilisateur de saisir tant qu'il ne saisit pas une bonne case
-        coup, verif = clique(plateau, 2)	#On vérifie son coup
-    plateau[coup] = 2			#On place le jeton à la case qu'il demande
-    return plateau			#On retourne le plateau
-
-def tourOrdi(plateau, niveau):		#Fonction qui fait jouer l'ordinateur
-    profondeur = len(caseVide(plateau))	#On prend le nombre de case vide
-    if niveau == -1:		#Si le niveau est imbattable on prend le nombre de case vide an tant que profondeur
-        niveau = profondeur
-    if profondeur == 9 or niveau == 0:	#Le premier coup ou le choix de l'ordinateur aléatoire donne le premier coup ou tous les autres aléatoires
-        verif = False
-        while verif == False:	#On vérifie que le coup n'écrase pas un autre coup
-            coup = random.randint(0,8)	#On génère le coup aléatoire
-            verif = verifCoup(plateau, coup)    #On le vérifie
-        cliqueOrdi(coup)    
-        plateau[coup] = -1	#On place le coup
-        return plateau		#On retourne le plateau
-    else:
-        coup = minimax(plateau, niveau, ORDI)	#On utilise la fonction minimax pour trouver le meilleur coup à jouer selon l'état du jeu
-        caseCoup = coup[0]		#On sauvegarde le coup dans une variable
-    cliqueOrdi(caseCoup)
-    plateau[caseCoup] = -1		#On place le coup de l'ordinateur
+    coup = -1
+    verif = False
+    while verif == False:   #Boucle infinie, sort si le coup est vérifié (dans la fonction clique)
+        coup, verif = CliqueHumain(plateau, 1)    #"Attend" un clique de l'utilisateur
+    plateau[coup] = 1
     return plateau
 
-def modifTableChoix(table,i):
-    if i == 0:
+def tourHum2(plateau):
+    profondeur = len(caseVide(plateau))
+    if profondeur == 0 or fini(plateau) == True:
+        return plateau
+    coup = -1
+    verif = False
+    while verif == False:   #Boucle infinie, sort si le coup est vérifié (dans la fonction clique)
+        coup, verif = CliqueHumain(plateau, 2)    #"Attend" un clique de l'utilisateur
+    plateau[coup] = 2
+    return plateau
+
+def tourOrdi(plateau, niveau):
+    profondeur = len(caseVide(plateau))
+    if niveau == -1:
+        niveau = profondeur
+    if profondeur == 9 or niveau == 0:
+        verif = False
+        while verif == False:
+            coup = random.randint(0,8)
+            verif = verifCoup(plateau, coup)    
+        CroixOrdi(coup) #affiche la croix une fois que l'ordinateur a joué son premier coup
+        plateau[coup] = -1
+        return plateau
+    else:
+        coup = minimax(plateau, niveau, ORDI)
+        caseCoup = coup[0]
+    CroixOrdi(caseCoup) #affiche la croix une fois que l'ordinateur a joué
+    plateau[caseCoup] = -1
+    return plateau
+
+def modifTableChoix(table,i):   #modifie le tableau des choix de difficultée
+    if i == 0:      #si rien ne change, rien n'est fait
         return table
-    elif i > 0:
+    elif i > 0:     #si une croix grise devient noir, donne la valeur 1 à la case correspondante du tableau
         table[i-1] = 1
         return table
-    elif i == -1:
+    elif i == -1:   #si Impossible devient gris, la case correspondante se réinitialise
         table[0] = 0
         return table
-    elif i == -2:
+    elif i == -2:   #si Difficile devient gris, la case correspondante se réinitialise
         table[1] = 0
         return table
-    elif i == -3:
+    elif i == -3:   #si Moyen devient gris, la case correspondante se réinitialise
         table[2] = 0
         return table
-    elif i == -4:
+    elif i == -4:   #si Facile devient gris, la case correspondante se réinitialise
         table[3] = 0
         return table
-    elif i == -5:
+    elif i == -5:   #si Random devient gris, la case correspondante se réinitialise
         table[4] = 0
         return table
-    elif i == -6:
+    elif i == -6:   #si Commencer devient gris, la case correspondante se réinitialise
         table[5] = 0
         return table
-    elif i == -7:
+    elif i == -7:   #si 2 Joueurs devient gris, la case correspondante se réinitialise
         table[6] = 0
         return table
-
-def conditionsDifficulte(table,i):
-    if table[5] == 1:
-        if table[7] == 1:
-            if table[6] == 1:
-                return 0, False, False, False
-            else:
-                return i, True, False, True
-        else:
-            return 0, False, False, False
-    else:
-        if table[7] == 1:
-            if table[6] == 1:
-                return 0, False, False, False
-            else:
-                return i, False, False, True
-        else:
-            return 0, False, False, False
-
-def difficulte(table):
-    if table[0] == 1:
-        return conditionsDifficulte(table,1)
-    elif table[1] == 1:
-        return conditionsDifficulte(table,2)
-    elif table[2] == 1:
-        return conditionsDifficulte(table,3)
-    elif table[3] == 1:
-        return conditionsDifficulte(table,4)
-    elif table[4] == 1:
-        return conditionsDifficulte(table,5)
-    elif table[6] == 1:
-        if table[7] == 1:
-            if table[5] == 1:
-                return 0, False, False, False
-            else:
-                return 0, False, True, True
-    return 0, False, False, False
-                        
+               
         
 		
 plateau = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-DebutGraph()
+t.title("Morpion 1.4.52")   #Titre
+texteChoixDifficulté()      #Affiche texte/croix pour choix difficulté
+grille()                    #La grille du morpion
 
-dif = [0,0,0,0,0,0,0,0]
-xdel, ydel = 0, 0
-jouer = False
-while jouer == False:
-    i, xdel, ydel = choixDifficulte(dif,xdel,ydel)
-    dif = modifTableChoix(dif,i)
-    typeJeu, commencer, deuxJoueurs, jouer = difficulte(dif)
+dif = [0,0,0,0,0,0,0,0] #initialise le tableau de choix de difficultée
+jouer = False           #initialise la variable de sortie de boucle
+while jouer == False:   #boucle infinie, sort une foi qu'il n'y a qu'un mode de difficultée sélectionner
+    i = choixDifficulte(dif)    #demande un clique sur les croix pour choisir le mode de difficultée
+    dif = modifTableChoix(dif,i)    #modifie le tableau en fonction du choix
+    typeJeu, commencer, deuxJoueurs, jouer = difficulte(dif)    #la difficultée, veux commencer ou non, 2 joueurs ou non, clique sur jouer ou non
     dif[7] = 0  #réinitialise le bouton jouer
+                #important si clique sur "jouer" alors que plusieurs modes de difficultée
     
 
 if deuxJoueurs == False:
